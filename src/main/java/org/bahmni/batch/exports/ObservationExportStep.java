@@ -126,6 +126,7 @@ public class ObservationExportStep {
             sb.append(",");
             sb.append(field.getFormattedTitle());
         }
+        sb.append(",date_created,date_changed");
         return sb.toString();
     }
 

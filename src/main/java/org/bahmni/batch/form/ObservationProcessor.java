@@ -52,10 +52,11 @@ public class ObservationProcessor implements ItemProcessor<Map<String,Object>, L
 		if (form.getFormName().getIsSet() == 1) {
 			retrieveChildObsIds(allChildObsIds, Arrays.asList((Integer)obsRow.get("obs_id")));
 		}
-		else
+		else {
 			allChildObsIds.add((Integer)obsRow.get("obs_id"));
+		}
 
-			List<Obs> obsRows = fetchAllLeafObs(allChildObsIds);
+		List<Obs> obsRows = fetchAllLeafObs(allChildObsIds);
 
 		setObsIdAndParentObsId(obsRows,(Integer)obsRow.get("obs_id"), (Integer)obsRow.get("parent_obs_id"));
 
