@@ -48,7 +48,7 @@ jar {
 
 ospackage {
     packageName = 'bahmni-endtb-batch'
-    release = System.getenv('GO_PIPELINE_COUNTER') ?: 1
+    release =  project.hasProperty('buildNumber') ? project.getProperty('buildNumber') : 1
     arch = NOARCH
     os = LINUX
     user = 'root'
