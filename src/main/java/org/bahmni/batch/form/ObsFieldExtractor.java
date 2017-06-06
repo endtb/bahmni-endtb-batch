@@ -7,6 +7,7 @@ import org.springframework.batch.item.file.transform.FieldExtractor;
 import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,13 +24,21 @@ public class ObsFieldExtractor implements FieldExtractor<List<Obs>>{
 	public Object[] extract(List<Obs> obsList) {
 		List<Object> row = new ArrayList<>();
 
+		Date dateCreated = null;
+		Date dateChanged = null;
+
 		if(obsList.size()==0)
 			return row.toArray();
-
 
 		Map<Concept,String> obsRow = new HashMap<>();
 		for(Obs obs: obsList){
 			obsRow.put(obs.getField(),obs.getValue());
+			if (dateCreated == null || dateCreated.after(obs.getDateCreated())) {
+				dateCreated = obs.getDateCreated();
+			}
+			if (dateChanged == null || dateChanged.before(obs.getDateChanged())) {
+				dateChanged = obs.getDateChanged();
+			}
 		}
 
 		row.add(obsList.get(0).getId());
@@ -43,6 +52,9 @@ public class ObsFieldExtractor implements FieldExtractor<List<Obs>>{
 		for(Concept field: form.getFields()){
 			row.add(massageStringValue(obsRow.get(field)));
 		}
+
+		row.add(dateCreated);
+		row.add(dateChanged);
 
 		return row.toArray();
 	}

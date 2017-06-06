@@ -9,7 +9,9 @@ SELECT
   o.additional_instructions                                                                  AS 'addlinstr',
   DATE_FORMAT(o.stopDate, '%d/%b/%Y')                                                        AS 'd_tbdrugend',
   o.stopped_order_reason                                                                     AS 'reas_tbd_stop',
-  o.order_reason_non_coded                                                                   AS 'id_aenum_reas_d_stop_oth'
+  o.order_reason_non_coded                                                                   AS 'id_aenum_reas_d_stop_oth',
+  MAX(o.date_created),
+  MAX(o.date_changed)
 FROM
   (SELECT
      IF(drug.name IS NULL, drug_order.drug_non_coded, coalesce(drug_code.code, drug.name))                      AS drug,
@@ -32,7 +34,11 @@ FROM
      IF(LOCATE("additionalInstructions", drug_order.dosing_instructions),
         CONCAT('\"',TRIM(TRAILING '"}' FROM SUBSTRING_INDEX(drug_order.dosing_instructions, '"', -2)), '\"'),
         '')                                                                                AS additional_instructions,
-     pp.date_enrolled
+     pp.date_enrolled,
+     orders.date_created as date_created,
+     GREATEST(COALESCE(orders.date_created,0),
+              COALESCE(pg_attr.date_changed,0)
+     ) as date_changed
    FROM patient_program pp
      JOIN program prog ON pp.program_id = prog.program_id AND pp.voided = 0 AND
                           prog.name IN ('Second-line TB treatment register', 'Basic management unit TB register')

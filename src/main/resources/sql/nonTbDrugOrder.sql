@@ -11,8 +11,9 @@ SELECT
   o.additional_instructions,
   reason_admin.code as 'reas_othdrug',
   DATE_FORMAT(o.startDate, '%d/%b/%Y') as 'd_othdrugstart',
-  DATE_FORMAT(o.stopDate, '%d/%b/%Y') as 'd_othdrugend'
-
+  DATE_FORMAT(o.stopDate, '%d/%b/%Y') as 'd_othdrugend',
+  MAX(o.date_created),
+  MAX(o.date_changed)
 FROM
   (SELECT
      IF(drug.name is NULL,drug_order.drug_non_coded, drug.name) as drugName,
@@ -37,7 +38,11 @@ FROM
      IF(LOCATE("additionalInstructions",drug_order.dosing_instructions) ,CONCAT('\"',TRIM(TRAILING '"}' FROM SUBSTRING_INDEX(drug_order.dosing_instructions, '"',-2)), '\"'),'') as additional_instructions,
      IF(LOCATE("{\"instructions",dosing_instructions) ,TRIM(LEADING '{"instructions":"' FROM SUBSTRING_INDEX(dosing_instructions, '"',+4)),'') as reason_for_administration,
      drug_order.dosing_instructions,
-     pp.date_enrolled
+     pp.date_enrolled,
+     orders.date_created as date_created,
+     GREATEST(COALESCE(orders.date_created,0),
+              COALESCE(pg_attr.date_changed,0)
+     ) as date_changed
    FROM  patient_program pp
      JOIN program prog ON pp.program_id = prog.program_id AND prog.name in ('Second-line TB treatment register','Basic management unit TB register') AND pp.voided = 0
      LEFT JOIN patient_program_attribute pg_attr ON pp.patient_program_id = pg_attr.patient_program_id AND pg_attr.voided = 0

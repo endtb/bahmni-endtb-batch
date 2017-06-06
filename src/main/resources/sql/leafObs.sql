@@ -2,7 +2,9 @@ select o.concept_id as conceptId,
   o.obs_id as id,
   coalesce(DATE_FORMAT(o.value_datetime, '%d/%b/%Y'),o.value_numeric,o.value_text,cv.code,cvn.concept_full_name,cvn.concept_short_name) as value,
   ppa.value_reference as treatmentNumber,
-  obs_con.concept_full_name as conceptName
+  obs_con.concept_full_name as conceptName,
+  o.date_created as dateCreated,
+  GREATEST(COALESCE(o.date_created,0), COALESCE(ppa.date_changed,0)) as dateChanged
 from patient_program pp
 join program_attribute_type pg_at on (pg_at.name = 'Registration Number')
 left join  patient_program_attribute ppa  on (pp.patient_program_id = ppa.patient_program_id and pg_at.program_attribute_type_id=ppa.attribute_type_id)

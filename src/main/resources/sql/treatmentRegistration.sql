@@ -7,7 +7,11 @@ SELECT
   MAX(IF(pat.program_attribute_type_id = '2', CONCAT('\"',o.attr_value,'\"'), NULL)) AS `regnum`,
   DATE_FORMAT(o.date_enrolled, '%d/%b/%Y') as 'd_reg',
   MAX(IF(pat.program_attribute_type_id = '6', CONCAT('\"',o.concept_name, '\"'), NULL)) AS `reg_facility`,
-  o.status
+  o.status,
+  patient_id,
+  patient_program_id,
+  MAX(o.date_created),
+  MAX(o.date_changed)
 FROM
   (SELECT
      CONCAT('\"',pi.identifier,'\"') as identifier,
@@ -22,13 +26,23 @@ FROM
      prog.program_id,
      cn.name as concept_name,
      CONCAT('\"',outcome_concept.name, '\"') as status,
-     pp.patient_program_id
+     pp.patient_program_id,
+     pp.date_created as date_created,
+     GREATEST(COALESCE(pp.date_created,0),
+              COALESCE(pp.date_changed,0),
+              COALESCE(p.date_created,0),
+              COALESCE(p.date_changed,0),
+              COALESCE(pi.date_created,0),
+              COALESCE(pi.date_changed,0),
+              COALESCE(attr.date_created,0),
+              COALESCE(attr.date_changed,0)
+     ) as date_changed
    FROM  patient_program pp
      JOIN program prog ON pp.program_id = prog.program_id AND pp.voided = 0
      JOIN person p ON pp.patient_id = p.person_id
      JOIN person_name pn ON p.person_id = pn.person_id
      JOIN patient pa ON pp.patient_id = pa.patient_id
-     JOIN patient_identifier pi ON pa.patient_id = pi.patient_id
+     JOIN patient_identifier pi ON pa.patient_id = pi.patient_id AND pi.voided=0
      LEFT OUTER JOIN patient_program_attribute attr ON pp.patient_program_id = attr.patient_program_id AND attr.voided = 0
      LEFT OUTER JOIN program_attribute_type attr_type ON attr.attribute_type_id = attr_type.program_attribute_type_id
      LEFT OUTER JOIN concept_name cn ON cn.concept_id = attr.value_reference AND cn.voided =0
