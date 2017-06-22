@@ -12,8 +12,8 @@ SELECT
   reason_admin.code as 'reas_othdrug',
   DATE_FORMAT(o.startDate, '%d/%b/%Y') as 'd_othdrugstart',
   DATE_FORMAT(o.stopDate, '%d/%b/%Y') as 'd_othdrugend',
-  MAX(o.date_created),
-  MAX(o.date_changed)
+  DATE_FORMAT(MAX(o.date_created),'%Y-%m-%d %H:%i:%S'),
+  DATE_FORMAT(MAX(o.date_changed),'%Y-%m-%d %H:%i:%S')
 FROM
   (SELECT
      IF(drug.name is NULL,drug_order.drug_non_coded, drug.name) as drugName,

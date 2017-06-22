@@ -10,8 +10,8 @@ SELECT
   o.status,
   patient_id,
   patient_program_id,
-  MAX(o.date_created),
-  MAX(o.date_changed)
+  DATE_FORMAT(MAX(o.date_created),'%Y-%m-%d %H:%i:%S'),
+  DATE_FORMAT(MAX(o.date_changed),'%Y-%m-%d %H:%i:%S')
 FROM
   (SELECT
      CONCAT('\"',pi.identifier,'\"') as identifier,
@@ -28,14 +28,10 @@ FROM
      CONCAT('\"',outcome_concept.name, '\"') as status,
      pp.patient_program_id,
      pp.date_created as date_created,
-     GREATEST(COALESCE(pp.date_created,0),
-              COALESCE(pp.date_changed,0),
-              COALESCE(p.date_created,0),
-              COALESCE(p.date_changed,0),
-              COALESCE(pi.date_created,0),
-              COALESCE(pi.date_changed,0),
-              COALESCE(attr.date_created,0),
-              COALESCE(attr.date_changed,0)
+     GREATEST(COALESCE(pp.date_changed, pp.date_created),
+              COALESCE(p.date_changed, p.date_created),
+              COALESCE(pi.date_changed, pi.date_created),
+              COALESCE(attr.date_changed, attr.date_created)
      ) as date_changed
    FROM  patient_program pp
      JOIN program prog ON pp.program_id = prog.program_id AND pp.voided = 0
