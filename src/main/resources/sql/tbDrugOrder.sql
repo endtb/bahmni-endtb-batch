@@ -10,8 +10,8 @@ SELECT
   DATE_FORMAT(o.stopDate, '%d/%b/%Y')                                                        AS 'd_tbdrugend',
   o.stopped_order_reason                                                                     AS 'reas_tbd_stop',
   o.order_reason_non_coded                                                                   AS 'id_aenum_reas_d_stop_oth',
-  MAX(o.date_created),
-  MAX(o.date_changed)
+  DATE_FORMAT(MAX(o.date_created),'%Y-%m-%d %H:%i:%S'),
+  DATE_FORMAT(MAX(o.date_changed),'%Y-%m-%d %H:%i:%S')
 FROM
   (SELECT
      IF(drug.name IS NULL, drug_order.drug_non_coded, coalesce(drug_code.code, drug.name))                      AS drug,
