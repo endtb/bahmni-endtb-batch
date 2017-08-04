@@ -14,9 +14,8 @@ public class NonTBDrugOrderBaseExportStep extends BaseExportStep {
     @Autowired
     public NonTBDrugOrderBaseExportStep(StepBuilderFactory stepBuilderFactory,
                                         DataSource dataSource,
-                                        @Value("classpath:sql/nonTbDrugOrder.sql") Resource sqlResource,
                                         @Value("${outputFolder}/nonTbDrugOrder.csv") Resource outputFolder,
                                         @Value("${nonTbDrugOrderHeaders}") String headers ) {
-        super(stepBuilderFactory, dataSource, sqlResource, outputFolder, "nonTbDrugOrder", headers);
+        super(stepBuilderFactory, dataSource, "nonTbDrugOrder.sql.ftl", outputFolder, "nonTbDrugOrder", headers);
     }
 }
