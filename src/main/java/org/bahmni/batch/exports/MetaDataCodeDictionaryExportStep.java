@@ -13,10 +13,9 @@ public class MetaDataCodeDictionaryExportStep extends BaseExportStep {
     @Autowired
     public MetaDataCodeDictionaryExportStep(StepBuilderFactory stepBuilderFactory,
                                             DataSource dataSource,
-                                            @Value("classpath:sql/metaDataCodeDictionary.sql") Resource sqlResource,
                                             @Value("${outputFolder}/metaDataCodeDictionary.csv") Resource outputFolder,
                                             @Value("${metaDataCodeDictionaryHeaders}") String headers) {
-        super(stepBuilderFactory, dataSource, sqlResource, outputFolder, "metaDataCodeDictionary", headers);
+        super(stepBuilderFactory, dataSource, "metaDataCodeDictionary.sql.ftl", outputFolder, "metaDataCodeDictionary", headers);
     }
 
 }

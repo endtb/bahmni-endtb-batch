@@ -26,6 +26,7 @@ import javax.sql.DataSource;
 import java.io.File;
 import java.io.IOException;
 import java.io.Writer;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -44,8 +45,11 @@ public class ObservationExportStep {
     @Value("${outputFolder}")
     public Resource outputFolder;
 
+    @Value("${restrictByTreatmentInitiationCohort:false}")
+    public Boolean restrictByTreatmentInitiationCohort;
+
     @Autowired
-    private FreeMarkerEvaluator<BahmniForm> freeMarkerEvaluator;
+    private FreeMarkerEvaluator<Map<String, Object>> freeMarkerEvaluator;
 
     private BahmniForm form;
 
@@ -66,7 +70,10 @@ public class ObservationExportStep {
     }
 
     private JdbcCursorItemReader<Map<String, Object>> obsReader() {
-        String sql = freeMarkerEvaluator.evaluate("obsWithParentSql.ftl",form);
+        Map<String, Object> input = new HashMap<String,Object>();
+        input.put("form", form);
+        input.put("restrictByTreatmentInitiationCohort", restrictByTreatmentInitiationCohort);
+        String sql = freeMarkerEvaluator.evaluate("obsWithParentSql.ftl", input);
         JdbcCursorItemReader<Map<String, Object>> reader = new JdbcCursorItemReader<>();
         reader.setDataSource(dataSource);
         reader.setSql(sql);

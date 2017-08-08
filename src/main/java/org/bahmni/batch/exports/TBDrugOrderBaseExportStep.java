@@ -15,10 +15,9 @@ public class TBDrugOrderBaseExportStep extends  BaseExportStep{
     @Autowired
     public TBDrugOrderBaseExportStep(StepBuilderFactory stepBuilderFactory,
                                      DataSource dataSource,
-                                     @Value("classpath:sql/tbDrugOrder.sql") Resource sqlResource,
                                      @Value("${outputFolder}/tbDrugOrder.csv") Resource outputFolder,
                                      @Value("${tbDrugOrderHeaders}")String headers) {
-        super(stepBuilderFactory, dataSource, sqlResource, outputFolder, "tbDrugOrder", headers);
+        super(stepBuilderFactory, dataSource, "tbDrugOrder.sql.ftl", outputFolder, "tbDrugOrder", headers);
     }
 
 

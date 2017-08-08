@@ -64,5 +64,11 @@ FROM
   LEFT OUTER JOIN program_attribute_type pat ON o.attribute_type_id = pat.program_attribute_type_id
   LEFT JOIN concept_name cn on cn.name=o.reason_for_administration and cn.voided = 0
   LEFT JOIN concept_reference_term_map_view reason_admin on reason_admin.concept_id=cn.concept_id AND reason_admin.concept_reference_source_name='EndTB-Export' and reason_admin.concept_map_type_name= 'SAME-AS'
+
+<#if input.restrictByTreatmentInitiationCohort>
+WHERE patient_id in
+(select distinct person_id from obs where concept_id in (SELECT concept_id from concept_name where name='Treatment Initiation')  and obs_group_id IS NULL and voided=0)
+</#if>
+
 GROUP BY patient_id, program_id, order_id
 ORDER BY patient_id, date_enrolled;
