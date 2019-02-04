@@ -108,6 +108,7 @@ public class ObservationProcessorTest {
 		observationProcessor.setObsDetailSqlResource(new ByteArrayResource("blah..blah..blah".getBytes()));
 		observationProcessor.setLeafObsSqlResource(new ByteArrayResource("get..all..child".getBytes()));
 		observationProcessor.setFormFieldTransformer(formFieldTransformer);
+		observationProcessor.setExternalCohortTypes(new ArrayList<String>());
 
 		observationProcessor.setForm(form);
 		observationProcessor.postConstruct();
