@@ -34,12 +34,15 @@ public class JobCompletionNotificationListener extends JobExecutionListenerSuppo
 	    this.zipFolder = zipFolder;
     }
 
+	@Value("${jobName}")
+	private String jobName;
+
     @Override
     public void beforeJob(JobExecution jobExecution) {
 	    try {
 		    FileUtils.deleteQuietly(outputFolder.getFile());
 		    FileUtils.forceMkdir(outputFolder.getFile());
-		    String zipFileName = BatchConfiguration.FULL_DATA_EXPORT_JOB_NAME + new SimpleDateFormat("yyyyMMddHHmm").format(new Date()) + ".zip";
+		    String zipFileName = jobName + new SimpleDateFormat("yyyyMMddHHmm").format(new Date()) + ".zip";
 		    jobExecution.getExecutionContext().put(OUTPUT_FILE_NAME_CONTEXT_KEY,zipFileName);
 	    }
 	    catch (IOException e) {

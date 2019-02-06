@@ -31,6 +31,7 @@
                 <thead>
                 <tr>
                     <th>Date</th>
+                    <th>Job Name</th>
                     <th>Job Status</th>
                     <th>Download</th>
                 </tr>
@@ -38,6 +39,7 @@
                 <tbody>
                 <#list input as jobResult><tr>
                     <td>${jobResult.dateOfExecution}</td>
+                    <td>${jobResult.jobName}</td>
                     <td>${jobResult.status}</td>
                     <#if jobResult.status == 'COMPLETED'>
                         <td><a href="/openmrs/ws/rest/v1/endtb/export?filename=${jobResult.zipFileName}" class="button small report-download"><i class="fa fa-download"></i></a></td>
