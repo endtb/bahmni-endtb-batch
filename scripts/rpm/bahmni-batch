@@ -2,10 +2,23 @@
 
 . /etc/bahmni-installer/bahmni.conf
 
-INPUT_TYPE="$(cut -d'=' -f1 <<< $1)"
-export EXTERNAL_COHORT_TYPES=""
-if [[ "$INPUT_TYPE" == "belongs_to_external_cohort" ]]; then
-export EXTERNAL_COHORT_TYPES="$(cut -d'=' -f2 <<< $1)"
+export JOB_NAME=""
+if [[ -z $1 ]]; then
+    export JOB_NAME="Total Export"
+else
+    export EXTERNAL_COHORT_TYPES=""
+    INPUT_TYPE="$(cut -d'=' -f1 <<< $1)"
+    if [[ "$INPUT_TYPE" == "belongs_to_external_cohort" ]]; then
+        export EXTERNAL_COHORT_TYPES="$(cut -d'=' -f2 <<< $1)"
+    fi
+    if [[ -z $2 ]]; then
+    export JOB_NAME="External Cohort Export"
+    else
+        INPUT_TYPE="$(cut -d'=' -f1 <<< $2)"
+        if [[ "$INPUT_TYPE" == "job_name" ]]; then
+            export JOB_NAME="$(cut -d'=' -f2 <<< $2)"
+        fi
+    fi
 fi
 echo "Running bahmni-batch..."
 java -DOPENMRS_DB_SERVER=${OPENMRS_DB_SERVER} -DOPENMRS_DB_USER=${OPENMRS_DB_USERNAME} -DOPENMRS_DB_PASSWORD=${OPENMRS_DB_PASSWORD} -jar /opt/bahmni-batch/libs/bahmni-batch-*.jar >> /opt/bahmni-batch/log/bahmni-batch.log
