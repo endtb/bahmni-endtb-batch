@@ -1,6 +1,6 @@
 package org.bahmni.batch.exports;
 
-import org.bahmni.batch.helper.FreeMarkerEvaluator;
+import org.bahmni.batch.BatchUtils;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.item.database.JdbcCursorItemReader;
@@ -8,28 +8,21 @@ import org.springframework.batch.item.file.FlatFileHeaderCallback;
 import org.springframework.batch.item.file.FlatFileItemWriter;
 import org.springframework.batch.item.file.transform.DelimitedLineAggregator;
 import org.springframework.batch.item.file.transform.PassThroughFieldExtractor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.jdbc.core.ColumnMapRowMapper;
 
+import javax.annotation.PostConstruct;
 import javax.sql.DataSource;
 import java.io.IOException;
 import java.io.Writer;
-import java.util.HashMap;
-import java.util.Map;
 
 
 public class BaseExportStep {
-
-    @Value("${restrictByTreatmentInitiationCohort:false}")
-    public Boolean restrictByTreatmentInitiationCohort;
-
     private DataSource dataSource;
 
     private StepBuilderFactory stepBuilderFactory;
 
-    private String ftlFilename;
+    private Resource sqlResource;
 
     private Resource outputFolder;
 
@@ -37,13 +30,12 @@ public class BaseExportStep {
 
     private String headers;
 
-    @Autowired
-    private FreeMarkerEvaluator<Map<String, Object>> freeMarkerEvaluator;
+    private String sql;
 
-    public BaseExportStep(StepBuilderFactory stepBuilderFactory, DataSource dataSource, String ftlFilename, Resource outputFolder, String exportName, String headers) {
+    public BaseExportStep(StepBuilderFactory stepBuilderFactory, DataSource dataSource, Resource sqlResource, Resource outputFolder, String exportName, String headers) {
         this.dataSource = dataSource;
         this.stepBuilderFactory = stepBuilderFactory;
-        this.ftlFilename = ftlFilename;
+        this.sqlResource = sqlResource;
         this.outputFolder = outputFolder;
         this.exportName = exportName;
         this.headers = headers;
@@ -59,11 +51,6 @@ public class BaseExportStep {
     }
 
     private JdbcCursorItemReader jdbcItemReader() {
-
-        Map<String, Object> input = new HashMap<String,Object>();
-        input.put("restrictByTreatmentInitiationCohort", restrictByTreatmentInitiationCohort);
-        String sql = freeMarkerEvaluator.evaluate(ftlFilename, input);
-
         JdbcCursorItemReader reader = new JdbcCursorItemReader();
         reader.setDataSource(dataSource);
         reader.setSql(sql);
@@ -91,4 +78,8 @@ public class BaseExportStep {
         return headers;
     }
 
+    @PostConstruct
+    public void postConstruct(){
+        this.sql = BatchUtils.convertResourceOutputToString(sqlResource);
+    }
 }

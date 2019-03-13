@@ -2,10 +2,6 @@
 
 . /etc/bahmni-installer/bahmni.conf
 
-# change to this directory explicitly so that any properties set up in applicatin.properties here or the config subdirectory will get picked up
-# (see: https://docs.spring.io/spring-boot/docs/current/reference/html/boot-features-external-config.html)
-cd /opt/bahmni-batch
-
 echo "Running bahmni-batch..."
 java -DOPENMRS_DB_SERVER=${OPENMRS_DB_SERVER} -DOPENMRS_DB_USER=${OPENMRS_DB_USERNAME} -DOPENMRS_DB_PASSWORD=${OPENMRS_DB_PASSWORD} -jar /opt/bahmni-batch/libs/bahmni-batch-*.jar >> /opt/bahmni-batch/log/bahmni-batch.log
 echo "Done"

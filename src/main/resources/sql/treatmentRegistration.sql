@@ -45,12 +45,5 @@ FROM
      LEFT OUTER JOIN concept_name outcome_concept ON outcome_concept.concept_id = pp.outcome_concept_id and outcome_concept.concept_name_type='FULLY_SPECIFIED' AND outcome_concept.voided = 0
   ) o
   LEFT OUTER JOIN program_attribute_type pat ON o.attribute_type_id = pat.program_attribute_type_id
-
-
-<#if input.restrictByTreatmentInitiationCohort>
-WHERE patient_id in
-(select distinct person_id from obs where concept_id in (SELECT concept_id from concept_name where name='Treatment Initiation')  and obs_group_id IS NULL and voided=0)
-</#if>
-
 GROUP BY patient_id, patient_program_id
 ORDER BY patient_id, date_enrolled;
