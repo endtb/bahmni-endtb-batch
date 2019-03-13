@@ -7,6 +7,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
+import java.util.List;
 
 @Component
 public class MetaDataCodeDictionaryExportStep extends BaseExportStep {
@@ -15,8 +16,9 @@ public class MetaDataCodeDictionaryExportStep extends BaseExportStep {
                                             DataSource dataSource,
                                             @Value("classpath:sql/metaDataCodeDictionary.sql") Resource sqlResource,
                                             @Value("${outputFolder}/metaDataCodeDictionary.csv") Resource outputFolder,
-                                            @Value("${metaDataCodeDictionaryHeaders}") String headers) {
-        super(stepBuilderFactory, dataSource, sqlResource, outputFolder, "metaDataCodeDictionary", headers);
+                                            @Value("${metaDataCodeDictionaryHeaders}") String headers,
+                                            @Value("#{'${externalCohortTypes}'.split(',')}") List<String> externalCohortTypes) {
+        super(stepBuilderFactory, dataSource, sqlResource, outputFolder, "metaDataCodeDictionary", headers, externalCohortTypes);
     }
 
 }

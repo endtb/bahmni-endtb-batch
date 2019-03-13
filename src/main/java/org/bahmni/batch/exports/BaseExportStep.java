@@ -1,6 +1,5 @@
 package org.bahmni.batch.exports;
 
-import org.bahmni.batch.BatchUtils;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.item.database.JdbcCursorItemReader;
@@ -15,9 +14,14 @@ import javax.annotation.PostConstruct;
 import javax.sql.DataSource;
 import java.io.IOException;
 import java.io.Writer;
+import java.util.List;
 
+import static org.bahmni.batch.BatchUtils.constructSqlWithCohortParameters;
+import static org.bahmni.batch.BatchUtils.convertResourceOutputToString;
 
 public class BaseExportStep {
+    private List<String> externalCohortTypes;
+
     private DataSource dataSource;
 
     private StepBuilderFactory stepBuilderFactory;
@@ -32,13 +36,15 @@ public class BaseExportStep {
 
     private String sql;
 
-    public BaseExportStep(StepBuilderFactory stepBuilderFactory, DataSource dataSource, Resource sqlResource, Resource outputFolder, String exportName, String headers) {
+    public BaseExportStep(StepBuilderFactory stepBuilderFactory, DataSource dataSource, Resource sqlResource,
+                          Resource outputFolder, String exportName, String headers, List<String> externalCohortTypes) {
         this.dataSource = dataSource;
         this.stepBuilderFactory = stepBuilderFactory;
         this.sqlResource = sqlResource;
         this.outputFolder = outputFolder;
         this.exportName = exportName;
         this.headers = headers;
+        this.externalCohortTypes = externalCohortTypes;
     }
 
     public Step getStep() {
@@ -80,6 +86,7 @@ public class BaseExportStep {
 
     @PostConstruct
     public void postConstruct(){
-        this.sql = BatchUtils.convertResourceOutputToString(sqlResource);
+        String sql = convertResourceOutputToString(sqlResource);
+        this.sql = constructSqlWithCohortParameters(sql, externalCohortTypes);
     }
 }

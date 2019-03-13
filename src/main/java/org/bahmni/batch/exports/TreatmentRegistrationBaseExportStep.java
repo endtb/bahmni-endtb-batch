@@ -8,6 +8,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
+import java.util.List;
 
 @Component
 public class TreatmentRegistrationBaseExportStep extends BaseExportStep {
@@ -16,7 +17,8 @@ public class TreatmentRegistrationBaseExportStep extends BaseExportStep {
     public TreatmentRegistrationBaseExportStep(StepBuilderFactory stepBuilderFactory, DataSource dataSource,
                                                @Value("classpath:sql/treatmentRegistration.sql") Resource sqlResource,
                                                @Value("${outputFolder}/treatmentRegistration.csv") Resource outputFolder,
-                                               @Value("${treatmentRegistrationHeaders}")String headers ) {
-        super(stepBuilderFactory, dataSource, sqlResource, outputFolder, "treatmentRegistration", headers);
+                                               @Value("${treatmentRegistrationHeaders}")String headers,
+                                               @Value("#{'${externalCohortTypes}'.split(',')}") List<String> externalCohortTypes) {
+        super(stepBuilderFactory, dataSource, sqlResource, outputFolder, "treatmentRegistration", headers, externalCohortTypes);
     }
 }

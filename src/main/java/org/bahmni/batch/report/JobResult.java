@@ -5,11 +5,13 @@ public class JobResult {
 	private String dateOfExecution;
 	private String status;
 	private String zipFileName;
+	private String jobName;
 
-	public JobResult(String dateOfExecution, String status, String zipFileName) {
+	public JobResult(String dateOfExecution, String status, String zipFileName, String jobName) {
 		this.dateOfExecution = dateOfExecution;
 		this.status = status;
 		this.zipFileName = zipFileName;
+		this.jobName = jobName;
 	}
 
 	public String getDateOfExecution() {
@@ -34,5 +36,9 @@ public class JobResult {
 
 	public void setZipFileName(String zipFileName) {
 		this.zipFileName = zipFileName;
+	}
+
+	public String getJobName() {
+		return jobName;
 	}
 }

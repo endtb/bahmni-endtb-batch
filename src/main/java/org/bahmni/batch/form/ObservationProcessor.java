@@ -42,6 +42,9 @@ public class ObservationProcessor implements ItemProcessor<Map<String,Object>, L
 	@Value("classpath:sql/leafObs.sql")
 	private Resource leafObsSqlResource;
 
+	@Value("#{'${externalCohortTypes}'.split(',')}")
+	private List<String> externalCohortTypes;
+
 	@Autowired
 	private FormFieldTransformer formFieldTransformer;
 
@@ -60,13 +63,15 @@ public class ObservationProcessor implements ItemProcessor<Map<String,Object>, L
 
 		setObsIdAndParentObsId(obsRows,(Integer)obsRow.get("obs_id"), (Integer)obsRow.get("parent_obs_id"));
 
-		return obsRows;
+		return obsRows.size() > 0 ? obsRows : null;
 	}
 
 	private List<Obs> fetchAllLeafObs(List<Integer> allChildObsGroupIds) {
-		Map<String,List<Integer>> params = new HashMap<>();
+		Map<String, Object> params = new HashMap<>();
 		params.put("childObsIds",allChildObsGroupIds);
 		params.put("leafConceptIds",formFieldTransformer.transformFormToFieldIds(form));
+		params.put("belongsToExternalCohort", externalCohortTypes.size() >= 1 && !externalCohortTypes.get(0).isEmpty());
+		params.put("externalCohortTypes", externalCohortTypes);
 
 		return jdbcTemplate.query(leafObsSql, params, new BeanPropertyRowMapper<Obs>(Obs.class){
 			@Override
@@ -117,6 +122,10 @@ public class ObservationProcessor implements ItemProcessor<Map<String,Object>, L
 
 	public void setFormFieldTransformer(FormFieldTransformer formFieldTransformer) {
 		this.formFieldTransformer = formFieldTransformer;
+	}
+
+	public void setExternalCohortTypes(List<String> externalCohortTypes) {
+		this.externalCohortTypes = externalCohortTypes;
 	}
 
 	@PostConstruct

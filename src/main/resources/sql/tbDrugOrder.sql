@@ -46,6 +46,11 @@ FROM
      LEFT JOIN program_attribute_type pg_attr_type
        ON pg_attr.attribute_type_id = pg_attr_type.program_attribute_type_id AND
           pg_attr_type.name IN ('Registration Number')
+     LEFT JOIN program_attribute_type pg_at_cohort on (pg_at_cohort.name = 'Belongs to external cohort')
+     LEFT JOIN patient_program_attribute ppa_cohort on (pp.patient_program_id = ppa_cohort.patient_program_id and
+                                                        pg_at_cohort.program_attribute_type_id =
+                                                        ppa_cohort.attribute_type_id)
+     LEFT JOIN concept_view ppa_cv on ppa_cv.concept_id = ppa_cohort.value_reference AND ppa_cv.retired IS FALSE
      JOIN episode_patient_program epp ON pp.patient_program_id = epp.patient_program_id
      JOIN episode_encounter ee ON ee.episode_id = epp.episode_id
      JOIN orders orders ON orders.patient_id = pp.patient_id AND orders.encounter_id = ee.encounter_id AND
@@ -66,6 +71,8 @@ FROM
      LEFT JOIN order_frequency ON order_frequency.order_frequency_id = drug_order.frequency
      LEFT JOIN concept_reference_term_map_view fre ON order_frequency.concept_id = fre.concept_id and fre.concept_reference_source_name='EndTB-Export' and fre.concept_map_type_name= 'SAME-AS'
      LEFT JOIN concept_reference_term_map_view stopped_reason ON stopped_order.order_reason = stopped_reason.concept_id and stopped_reason.concept_reference_source_name='EndTB-Export' and stopped_reason.concept_map_type_name= 'SAME-AS'
+     WHERE (:belongsToExternalCohort IS TRUE AND ppa_cv.concept_full_name IN (:externalCohortTypes))
+         OR (:belongsToExternalCohort IS FALSE)
 ) o
   LEFT OUTER JOIN program_attribute_type pat ON o.attribute_type_id = pat.program_attribute_type_id
 GROUP BY patient_id, program_id, order_id

@@ -7,6 +7,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
+import java.util.List;
 
 @Component
 public class NonTBDrugOrderBaseExportStep extends BaseExportStep {
@@ -16,7 +17,8 @@ public class NonTBDrugOrderBaseExportStep extends BaseExportStep {
                                         DataSource dataSource,
                                         @Value("classpath:sql/nonTbDrugOrder.sql") Resource sqlResource,
                                         @Value("${outputFolder}/nonTbDrugOrder.csv") Resource outputFolder,
-                                        @Value("${nonTbDrugOrderHeaders}") String headers ) {
-        super(stepBuilderFactory, dataSource, sqlResource, outputFolder, "nonTbDrugOrder", headers);
+                                        @Value("${nonTbDrugOrderHeaders}") String headers,
+                                        @Value("#{'${externalCohortTypes}'.split(',')}") List<String> externalCohortTypes) {
+        super(stepBuilderFactory, dataSource, sqlResource, outputFolder, "nonTbDrugOrder", headers, externalCohortTypes);
     }
 }
