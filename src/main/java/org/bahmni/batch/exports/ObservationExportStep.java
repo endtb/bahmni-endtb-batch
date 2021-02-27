@@ -104,7 +104,7 @@ public class ObservationExportStep {
         File outputFile;
 
         try {
-            outputFile = new File(outputFolder.getFile(),form.getDisplayName() + FILE_NAME_EXTENSION);
+            outputFile = new File(outputFolder.getFile(),form.getDisplayNameIncludingParents() + FILE_NAME_EXTENSION);
         }
         catch (IOException e) {
             throw new BatchResourceException("Unable to create a file in the outputFolder ["+ outputFolder.getFilename()+"]",e);
@@ -136,7 +136,7 @@ public class ObservationExportStep {
     }
 
     public String getStepName() {
-        String formName = form.getFormName().getName();
+        String formName = form.getDisplayNameIncludingParents();
         return formName.substring(0,Math.min(formName.length(), 100));
     }
 }
