@@ -21,8 +21,10 @@ public class FormListProcessor {
 	@Autowired
 	private BahmniFormFactory bahmniFormFactory;
 
-
-	public List<BahmniForm> retrieveAllForms(){
+	public List<BahmniForm> retrieveForms(String formSet) {
+		if (formSet == null || formSet.equals("")) {
+			formSet = ALL_FORMS;
+		}
 		List<Concept> allFormConcepts = obsService.getChildConcepts(ALL_FORMS);
 		allFormConcepts.add(obsService.getConceptsByNames("Bacteriology Concept Set").get(0));
 
@@ -34,6 +36,10 @@ public class FormListProcessor {
 		List<BahmniForm> flattenedFormList = new ArrayList<>(forms);
 		fetchExportFormsList(forms, flattenedFormList);
 		return flattenedFormList;
+	}
+
+	public List<BahmniForm> retrieveAllForms(){
+		return retrieveForms(ALL_FORMS);
 	}
 
 	private void fetchExportFormsList(List<BahmniForm> forms, List<BahmniForm> flattenedList){

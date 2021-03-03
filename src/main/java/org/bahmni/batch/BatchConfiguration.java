@@ -70,6 +70,9 @@ public class BatchConfiguration extends DefaultBatchConfigurer {
 	@Value("${jobName}")
 	private String jobName;
 
+	@Value("${formSet}")
+	private String formSet;
+
 	@Autowired
 	private ReportGenerator reportGenerator;
 
@@ -81,7 +84,7 @@ public class BatchConfiguration extends DefaultBatchConfigurer {
 	@Bean
 	public Job completeDataExport() throws IOException {
 
-		List<BahmniForm> forms = formListProcessor.retrieveAllForms();
+		List<BahmniForm> forms = formListProcessor.retrieveForms(formSet);
 
 		FlowBuilder<FlowJobBuilder> completeDataExport = jobBuilderFactory.get(jobName)
 				.incrementer(new RunIdIncrementer()).preventRestart()
