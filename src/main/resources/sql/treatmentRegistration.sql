@@ -7,11 +7,11 @@ SELECT
   MAX(IF(pat.program_attribute_type_id = '2', CONCAT('\"',o.attr_value,'\"'), NULL)) AS `regnum`,
   DATE_FORMAT(o.date_enrolled, '%d/%b/%Y') as 'd_reg',
   MAX(IF(pat.program_attribute_type_id = '6', CONCAT('\"',o.concept_name, '\"'), NULL)) AS `reg_facility`,
+  tc.cohort_type AS `cohort_type`,
+  tr.regimen_type AS `regimen_type`,
   o.status,
   patient_id,
   o.patient_program_id as `patient_program_id`,
-  tc.cohort_type AS `cohort_type`,
-  tr.regimen_type AS `regimen_type`,
   DATE_FORMAT(MAX(o.date_created),'%Y-%m-%d %H:%i:%S'),
   DATE_FORMAT(MAX(o.date_changed),'%Y-%m-%d %H:%i:%S')
 FROM
