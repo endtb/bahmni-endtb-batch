@@ -1,19 +1,3 @@
-DROP TEMPORARY TABLE IF EXISTS temp_cohort;
-CREATE TEMPORARY TABLE temp_cohort
-AS SELECT patient_program_attribute_id, patient_program_id, (SELECT name FROM concept_name cn WHERE cn.concept_id = value_reference
-AND cn.voided = 0 AND cn.locale = 'en' AND cn.concept_name_type = 'SHORT') cohort_type, attribute_type_id FROM
-patient_program_attribute ppa
-JOIN program_attribute_type pat
-ON ppa.voided = 0 AND ppa.attribute_type_id = program_attribute_type_id AND pat.name = "Belongs to external cohort";
-
-DROP TEMPORARY TABLE IF EXISTS temp_regimen;
-CREATE TEMPORARY TABLE temp_regimen
-AS SELECT patient_program_attribute_id, patient_program_id, (SELECT name FROM concept_name cn WHERE cn.concept_id = value_reference
-AND cn.voided = 0 AND cn.locale = 'en' AND cn.concept_name_type = 'SHORT') regimen_type, attribute_type_id FROM
-patient_program_attribute ppa
-JOIN program_attribute_type pat
-ON ppa.voided = 0 AND ppa.attribute_type_id = program_attribute_type_id AND pat.name = "Regimen type";
-
 SELECT
   o.identifier as 'id_emr',
   DATE_FORMAT(o.birthdate, '%d/%b/%Y') as 'dob',
@@ -69,8 +53,22 @@ FROM
    WHERE (:belongsToExternalCohort IS TRUE AND ppa_cv.concept_full_name IN (:externalCohortTypes))
          OR (:belongsToExternalCohort IS FALSE)
   ) o
+  LEFT OUTER JOIN
+  (
+  SELECT patient_program_attribute_id, patient_program_id, (SELECT name FROM concept_name cn WHERE cn.concept_id = value_reference
+  AND cn.voided = 0 AND cn.locale = 'en' AND cn.concept_name_type = 'SHORT') cohort_type, attribute_type_id FROM
+  patient_program_attribute ppa
+  JOIN program_attribute_type pat
+  ON ppa.voided = 0 AND ppa.attribute_type_id = program_attribute_type_id AND pat.name = "Belongs to external cohort"
+  ) tc ON o.patient_program_id = tc.patient_program_id
+  LEFT OUTER JOIN
+  (
+  SELECT patient_program_attribute_id, patient_program_id, (SELECT name FROM concept_name cn WHERE cn.concept_id = value_reference
+  AND cn.voided = 0 AND cn.locale = 'en' AND cn.concept_name_type = 'SHORT') regimen_type, attribute_type_id FROM
+  patient_program_attribute ppa
+  JOIN program_attribute_type pat
+  ON ppa.voided = 0 AND ppa.attribute_type_id = program_attribute_type_id AND pat.name = "Regimen type"
+  ) tr ON o.patient_program_id = tr.patient_program_id
   LEFT OUTER JOIN program_attribute_type pat ON o.attribute_type_id = pat.program_attribute_type_id
-  LEFT OUTER JOIN temp_cohort tc ON o.patient_program_id = tc.patient_program_id
-  LEFT OUTER JOIN temp_regimen tr ON o.patient_program_id = tr.patient_program_id
 GROUP BY patient_id, o.patient_program_id
 ORDER BY patient_id, date_enrolled;
