@@ -4,6 +4,7 @@ import org.bahmni.batch.form.domain.BahmniForm;
 import org.bahmni.batch.form.domain.Concept;
 import org.bahmni.batch.form.service.ObsService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -13,7 +14,8 @@ import java.util.List;
 @Component
 public class FormListProcessor {
 
-	public static final String ALL_FORMS = "All Observation Templates";
+	@Value("${allForms:All Observation Templates}")
+	private String allForms;
 
 	@Autowired
 	private ObsService obsService;
@@ -23,7 +25,7 @@ public class FormListProcessor {
 
 
 	public List<BahmniForm> retrieveAllForms(){
-		List<Concept> allFormConcepts = obsService.getChildConcepts(ALL_FORMS);
+		List<Concept> allFormConcepts = obsService.getChildConcepts(allForms);
 		allFormConcepts.add(obsService.getConceptsByNames("Bacteriology Concept Set").get(0));
 
 		List<BahmniForm> forms = new ArrayList<>();
@@ -51,5 +53,13 @@ public class FormListProcessor {
 
 	public void setBahmniFormFactory(BahmniFormFactory bahmniFormFactory) {
 		this.bahmniFormFactory = bahmniFormFactory;
+	}
+
+	public String getAllForms() {
+		return allForms;
+	}
+
+	public void setAllForms(String allForms) {
+		this.allForms = allForms;
 	}
 }

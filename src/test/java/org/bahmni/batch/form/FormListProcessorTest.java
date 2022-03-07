@@ -32,7 +32,7 @@ public class FormListProcessorTest {
 		formListProcessor = new FormListProcessor();
 		formListProcessor.setObsService(obsService);
 		formListProcessor.setBahmniFormFactory(bahmniFormFactory);
-
+		formListProcessor.setAllForms("All Observation Templates");
 	}
 
 	@Test
@@ -42,7 +42,7 @@ public class FormListProcessorTest {
 		List<Concept> conceptList = new ArrayList();
 		conceptList.add(conceptA);
 
-		when(obsService.getChildConcepts(FormListProcessor.ALL_FORMS)).thenReturn(conceptList);
+		when(obsService.getChildConcepts(formListProcessor.getAllForms())).thenReturn(conceptList);
 
 		when(obsService.getConceptsByNames("Bacteriology Concept Set")).thenReturn(Arrays.asList(
 				bacteriologyConceptSet));
