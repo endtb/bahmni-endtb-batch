@@ -59,7 +59,14 @@ public class ObservationProcessor implements ItemProcessor<Map<String,Object>, L
 			allChildObsIds.add((Integer)obsRow.get("obs_id"));
 		}
 
-		List<Obs> obsRows = fetchAllLeafObs(allChildObsIds);
+		List<Obs> obsRows = null;
+
+		if (allChildObsIds != null && allChildObsIds.size() > 0) {
+			obsRows = fetchAllLeafObs(allChildObsIds);
+		}
+		else {
+			return null;
+		}
 
 		setObsIdAndParentObsId(obsRows,(Integer)obsRow.get("obs_id"), (Integer)obsRow.get("parent_obs_id"));
 
