@@ -67,6 +67,11 @@ public class ObservationProcessor implements ItemProcessor<Map<String,Object>, L
 	}
 
 	private List<Obs> fetchAllLeafObs(List<Integer> allChildObsGroupIds) {
+
+		if (allChildObsGroupIds == null || allChildObsGroupIds.isEmpty()) {
+			return new ArrayList<>();
+		}
+
 		Map<String, Object> params = new HashMap<>();
 		params.put("childObsIds",allChildObsGroupIds);
 		params.put("leafConceptIds",formFieldTransformer.transformFormToFieldIds(form));
