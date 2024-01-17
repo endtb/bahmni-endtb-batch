@@ -59,14 +59,7 @@ public class ObservationProcessor implements ItemProcessor<Map<String,Object>, L
 			allChildObsIds.add((Integer)obsRow.get("obs_id"));
 		}
 
-		List<Obs> obsRows = null;
-
-		if (allChildObsIds != null && allChildObsIds.size() > 0) {
-			obsRows = fetchAllLeafObs(allChildObsIds);
-		}
-		else {
-			return null;
-		}
+		List<Obs> obsRows = fetchAllLeafObs(allChildObsIds);
 
 		setObsIdAndParentObsId(obsRows,(Integer)obsRow.get("obs_id"), (Integer)obsRow.get("parent_obs_id"));
 
@@ -74,6 +67,11 @@ public class ObservationProcessor implements ItemProcessor<Map<String,Object>, L
 	}
 
 	private List<Obs> fetchAllLeafObs(List<Integer> allChildObsGroupIds) {
+
+		if (allChildObsGroupIds == null || allChildObsGroupIds.isEmpty()) {
+			return new ArrayList<>();
+		}
+
 		Map<String, Object> params = new HashMap<>();
 		params.put("childObsIds",allChildObsGroupIds);
 		params.put("leafConceptIds",formFieldTransformer.transformFormToFieldIds(form));
